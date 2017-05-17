@@ -41,6 +41,8 @@ const TCHAR *g_szNetfx40FullRegKeyName = _T("Software\\Microsoft\\NET Framework 
 const TCHAR *g_szNetfx40SPxRegValueName = _T("Servicing");
 const TCHAR *g_szNetfx45RegKeyName = _T("Software\\Microsoft\\NET Framework Setup\\NDP\\v4\\Full");
 const TCHAR *g_szNetfx45RegValueName = _T("Release");
+const TCHAR *g_szNetfx46RegKeyName = g_szNetfx45RegKeyName;
+const TCHAR *g_szNetfx46RegValueName = g_szNetfx45RegValueName;
 const TCHAR *g_szNetfxStandardRegValueName = _T("Install");
 const TCHAR *g_szNetfxStandardSPxRegValueName = _T("SP");
 const TCHAR *g_szNetfxStandardVersionRegValueName = _T("Version");
@@ -65,7 +67,22 @@ const int g_iNetfx40VersionRevision = 0;
 
 // Version information for final release of .NET Framework 4.5 and 4.5.1 (4.5.1 updated as per Windows 8.1 Release value)
 const int g_dwNetfx45ReleaseVersion = 378389;
-const int g_dwNetfx451ReleaseVersion = 378675;		 
+const int g_dwNetfx451ReleaseVersion = 378675;
+
+// Version information for final release of .NET Framework 4.5.2
+const int g_dwNetfx452ReleaseVersion = 379893;
+
+// Version information for final release of .NET Framework 4.6
+const int g_dwNetfx46Win10ReleaseVersion = 393295;
+const int g_dwNetfx46ReleaseVersion = 393297;
+
+// Version information for final release of .NET Framework 4.6.1
+const int g_dwNetfx461Win10ReleaseVersion = 394254;
+const int g_dwNetfx461ReleaseVersion = 394271;
+
+// Version information for final release of .NET Framework 4.6.2
+const int g_dwNetfx462Win10ReleaseVersion = 394802;
+const int g_dwNetfx462ReleaseVersion = 394806;
 
 // Constants for known .NET Framework versions used with the GetRequestedRuntimeInfo API
 const TCHAR *g_szNetfx10VersionString = _T("v1.0.3705");
@@ -89,18 +106,22 @@ bool IsNetfx40ClientInstalled();
 bool IsNetfx40FullInstalled();
 bool IsNetfx45Installed();
 bool IsNetfx451Installed();
+bool IsNetfx452Installed();
+bool IsNetfx46Installed();
+bool IsNetfx461Installed();
+bool IsNetfx462Installed();
 bool RegistryGetValue(HKEY, const TCHAR*, const TCHAR*, DWORD, LPBYTE, DWORD);
 
 
 /******************************************************************
 Function Name:  CheckNetfxVersionUsingMscoree
 Description:    Uses the logic described in the sample code at http://msdn2.microsoft.com/library/ydh6b3yb.aspx
-                to load mscoree.dll and call its APIs to determine
-                whether or not a specific version of the .NET
-                Framework is installed on the system
+				to load mscoree.dll and call its APIs to determine
+				whether or not a specific version of the .NET
+				Framework is installed on the system
 Inputs:         pszNetfxVersionToCheck - version to look for
 Results:        true if the requested version is installed
-                false otherwise
+				false otherwise
 ******************************************************************/
 bool CheckNetfxVersionUsingMscoree(const TCHAR *pszNetfxVersionToCheck)
 {
@@ -187,9 +208,9 @@ Finish:
 /******************************************************************
 Function Name:  GetNetfx10SPLevel
 Description:    Uses the detection method recommended at
-                http://blogs.msdn.com/astebner/archive/2004/09/14/229802.aspx
-                to determine what service pack for the 
-                .NET Framework 1.0 is installed on the machine
+				http://blogs.msdn.com/astebner/archive/2004/09/14/229802.aspx
+				to determine what service pack for the
+				.NET Framework 1.0 is installed on the machine
 Inputs:         NONE
 Results:        integer representing SP level for .NET Framework 1.0
 ******************************************************************/
@@ -229,9 +250,9 @@ int GetNetfx10SPLevel()
 
 /******************************************************************
 Function Name:	GetNetfxSPLevel
-Description:	Determine what service pack is installed for a 
-                version of the .NET Framework using registry
-				based detection methods documented in the 
+Description:	Determine what service pack is installed for a
+				version of the .NET Framework using registry
+				based detection methods documented in the
 				.NET Framework deployment guides.
 Inputs:         pszNetfxRegKeyName - registry key name to use for detection
 				pszNetfxRegValueName - registry value to use for detection
@@ -256,7 +277,7 @@ int GetNetfxSPLevel(const TCHAR *pszNetfxRegKeyName, const TCHAR *pszNetfxRegVal
 /******************************************************************
 Function Name:  GetProcessorArchitectureFlag
 Description:    Determine the processor architecture of the
-                system (x86, x64, ia64)
+				system (x86, x64, ia64)
 Inputs:         NONE
 Results:        DWORD processor architecture flag
 ******************************************************************/
@@ -295,7 +316,7 @@ DWORD GetProcessorArchitectureFlag()
 
 	if (bRetrievedSystemInfo)
 	{
-		switch (sSystemInfo.wProcessorArchitecture) 
+		switch (sSystemInfo.wProcessorArchitecture)
 		{
 			case PROCESSOR_ARCHITECTURE_INTEL:
 				return RUNTIME_INFO_REQUEST_X86;
@@ -315,8 +336,8 @@ DWORD GetProcessorArchitectureFlag()
 /******************************************************************
 Function Name:	CheckNetfxBuildNumber
 Description:	Retrieves the .NET Framework build number from
-                the registry and validates that it is not a pre-release
-                version number
+				the registry and validates that it is not a pre-release
+				version number
 Inputs:         NONE
 Results:        true if the build number in the registry is greater
 				than or equal to the passed in version; false otherwise
@@ -413,15 +434,15 @@ bool CheckNetfxBuildNumber(const TCHAR *pszNetfxRegKeyName, const TCHAR *pszNetf
 /******************************************************************
 Function Name:  IsCurrentOSTabletMedCenter
 Description:    Determine if the current OS is a Windows XP
-                Tablet PC Edition or Windows XP Media Center
-                Edition system
+				Tablet PC Edition or Windows XP Media Center
+				Edition system
 Inputs:         NONE
 Results:        true if the OS is Tablet PC or Media Center
-                false otherwise
+				false otherwise
 ******************************************************************/
 bool IsCurrentOSTabletMedCenter()
 {
-	// Use GetSystemMetrics to detect if we are on a Tablet PC or Media Center OS  
+	// Use GetSystemMetrics to detect if we are on a Tablet PC or Media Center OS
 	return ( (GetSystemMetrics(SM_TABLETPC) != 0) || (GetSystemMetrics(SM_MEDIACENTER) != 0) );
 }
 
@@ -429,12 +450,12 @@ bool IsCurrentOSTabletMedCenter()
 /******************************************************************
 Function Name:  IsNetfx10Installed
 Description:    Uses the detection method recommended at
-                http://msdn.microsoft.com/library/ms994349.aspx
-                to determine whether the .NET Framework 1.0 is
-                installed on the machine
+				http://msdn.microsoft.com/library/ms994349.aspx
+				to determine whether the .NET Framework 1.0 is
+				installed on the machine
 Inputs:         NONE
 Results:        true if the .NET Framework 1.0 is installed
-                false otherwise
+				false otherwise
 ******************************************************************/
 bool IsNetfx10Installed()
 {
@@ -446,12 +467,12 @@ bool IsNetfx10Installed()
 /******************************************************************
 Function Name:  IsNetfx11Installed
 Description:    Uses the detection method recommended at
-                http://msdn.microsoft.com/library/ms994339.aspx
-                to determine whether the .NET Framework 1.1 is
-                installed on the machine
+				http://msdn.microsoft.com/library/ms994339.aspx
+				to determine whether the .NET Framework 1.1 is
+				installed on the machine
 Inputs:         NONE
 Results:        true if the .NET Framework 1.1 is installed
-                false otherwise
+				false otherwise
 ******************************************************************/
 bool IsNetfx11Installed()
 {
@@ -471,12 +492,12 @@ bool IsNetfx11Installed()
 /******************************************************************
 Function Name:	IsNetfx20Installed
 Description:	Uses the detection method recommended at
-                http://msdn2.microsoft.com/library/aa480243.aspx
-                to determine whether the .NET Framework 2.0 is
-                installed on the machine
+				http://msdn2.microsoft.com/library/aa480243.aspx
+				to determine whether the .NET Framework 2.0 is
+				installed on the machine
 Inputs:         NONE
 Results:        true if the .NET Framework 2.0 is installed
-                false otherwise
+				false otherwise
 ******************************************************************/
 bool IsNetfx20Installed()
 {
@@ -496,12 +517,12 @@ bool IsNetfx20Installed()
 /******************************************************************
 Function Name:	IsNetfx30Installed
 Description:	Uses the detection method recommended at
-                http://msdn.microsoft.com/library/aa964979.aspx
-                to determine whether the .NET Framework 3.0 is
-                installed on the machine
+				http://msdn.microsoft.com/library/aa964979.aspx
+				to determine whether the .NET Framework 3.0 is
+				installed on the machine
 Inputs:	        NONE
 Results:        true if the .NET Framework 3.0 is installed
-                false otherwise
+				false otherwise
 ******************************************************************/
 bool IsNetfx30Installed()
 {
@@ -525,12 +546,12 @@ bool IsNetfx30Installed()
 /******************************************************************
 Function Name:	IsNetfx35Installed
 Description:	Uses the detection method recommended at
-                http://msdn.microsoft.com/library/cc160716.aspx
-                to determine whether the .NET Framework 3.5 is
-                installed on the machine
+				http://msdn.microsoft.com/library/cc160716.aspx
+				to determine whether the .NET Framework 3.5 is
+				installed on the machine
 Inputs:	        NONE
 Results:        true if the .NET Framework 3.5 is installed
-                false otherwise
+				false otherwise
 ******************************************************************/
 bool IsNetfx35Installed()
 {
@@ -554,12 +575,12 @@ bool IsNetfx35Installed()
 /******************************************************************
 Function Name:	IsNetfx40ClientInstalled
 Description:	Uses the detection method recommended at
-                http://msdn.microsoft.com/library/ee942965(v=VS.100).aspx
-                to determine whether the .NET Framework 4 Client is
-                installed on the machine
+				http://msdn.microsoft.com/library/ee942965(v=VS.100).aspx
+				to determine whether the .NET Framework 4 Client is
+				installed on the machine
 Inputs:         NONE
 Results:        true if the .NET Framework 4 Client is installed
-                false otherwise
+				false otherwise
 ******************************************************************/
 bool IsNetfx40ClientInstalled()
 {
@@ -582,12 +603,12 @@ bool IsNetfx40ClientInstalled()
 /******************************************************************
 Function Name:	IsNetfx40FullInstalled
 Description:	Uses the detection method recommended at
-                http://msdn.microsoft.com/library/ee942965(v=VS.100).aspx
-                to determine whether the .NET Framework 4 Full is
-                installed on the machine
+				http://msdn.microsoft.com/library/ee942965(v=VS.100).aspx
+				to determine whether the .NET Framework 4 Full is
+				installed on the machine
 Inputs:         NONE
 Results:        true if the .NET Framework 4 Full is installed
-                false otherwise
+				false otherwise
 ******************************************************************/
 bool IsNetfx40FullInstalled()
 {
@@ -610,12 +631,12 @@ bool IsNetfx40FullInstalled()
 /******************************************************************
 Function Name:	IsNetfx45Installed
 Description:	Uses the detection method recommended at
-                http://msdn.microsoft.com/en-us/library/ee942965(v=vs.110).aspx
-                to determine whether the .NET Framework 4.5 is
-                installed on the machine
+				http://msdn.microsoft.com/en-us/library/ee942965(v=vs.110).aspx
+				to determine whether the .NET Framework 4.5 is
+				installed on the machine
 Inputs:         NONE
 Results:        true if the .NET Framework 4.5 is installed
-                false otherwise
+				false otherwise
 ******************************************************************/
 bool IsNetfx45Installed()
 {
@@ -631,18 +652,42 @@ bool IsNetfx45Installed()
 	return bRetValue;
 }
 
+/******************************************************************
+Function Name:	IsNetfx46Installed
+Description:	Uses the detection method recommended at
+http://msdn.microsoft.com/en-us/library/ee942965(v=vs.110).aspx
+to determine whether the .NET Framework 4.6 is
+installed on the machine
+Inputs:         NONE
+Results:        true if the .NET Framework 4.6 is installed
+false otherwise
+******************************************************************/
+bool IsNetfx46Installed()
+{
+	bool bRetValue = false;
+	DWORD dwRegValue = 0;
+
+	if (RegistryGetValue(HKEY_LOCAL_MACHINE, g_szNetfx46RegKeyName, g_szNetfx46RegValueName, NULL, (LPBYTE)&dwRegValue, sizeof(DWORD)))
+	{
+		if (g_dwNetfx46ReleaseVersion <= dwRegValue || g_dwNetfx46Win10ReleaseVersion <= dwRegValue)
+			bRetValue = true;
+	}
+
+	return bRetValue;
+}
+
 
 /******************************************************************
 Function Name:	IsNetfx451Installed
 Description:	Uses the detection method recommended at
-                http://msdn.microsoft.com/en-us/library/ee942965(v=vs.110).aspx
+				http://msdn.microsoft.com/en-us/library/ee942965(v=vs.110).aspx
 				and
 				http://blogs.msdn.com/b/astebner/archive/2013/11/11/10466402.aspx
-                to determine whether the .NET Framework 4.5.1 is
-                installed on the machine
+				to determine whether the .NET Framework 4.5.1 is
+				installed on the machine
 Inputs:         NONE
 Results:        true if the .NET Framework 4.5.1 is installed
-                false otherwise
+				false otherwise
 ******************************************************************/
 bool IsNetfx451Installed()
 {
@@ -659,15 +704,91 @@ bool IsNetfx451Installed()
 }
 
 
+
+/******************************************************************
+Function Name: IsNetfx452Installed
+Description: Uses the detection method recommended at
+http://msdn.microsoft.com/en-us/library/ee942965(v=vs.110).aspx
+to determine whether the .NET Framework 4.5.2 is
+installed on the machine
+Inputs: NONE
+Results: true if the .NET Framework 4.5.2 is installed
+false otherwise
+******************************************************************/
+bool IsNetfx452Installed()
+{
+	bool bRetValue = false;
+	DWORD dwRegValue = 0;
+
+	if (RegistryGetValue(HKEY_LOCAL_MACHINE, g_szNetfx45RegKeyName, g_szNetfx45RegValueName, NULL, (LPBYTE)&dwRegValue, sizeof(DWORD)))
+	{
+		if (g_dwNetfx452ReleaseVersion <= dwRegValue)
+			bRetValue = true;
+	}
+
+	return bRetValue;
+}
+
+
+/******************************************************************
+Function Name:	IsNetfx461Installed
+Description:	Uses the detection method recommended at
+http://msdn.microsoft.com/en-us/library/ee942965(v=vs.110).aspx
+to determine whether the .NET Framework 4.6.1 is
+installed on the machine
+Inputs:         NONE
+Results:        true if the .NET Framework 4.6.1 is installed
+false otherwise
+******************************************************************/
+bool IsNetfx461Installed()
+{
+	bool bRetValue = false;
+	DWORD dwRegValue = 0;
+
+	if (RegistryGetValue(HKEY_LOCAL_MACHINE, g_szNetfx46RegKeyName, g_szNetfx46RegValueName, NULL, (LPBYTE)&dwRegValue, sizeof(DWORD)))
+	{
+		if (g_dwNetfx461ReleaseVersion <= dwRegValue || g_dwNetfx461Win10ReleaseVersion <= dwRegValue)
+			bRetValue = true;
+	}
+
+	return bRetValue;
+}
+
+
+/******************************************************************
+Function Name:	IsNetfx462Installed
+Description:	Uses the detection method recommended at
+http://msdn.microsoft.com/en-us/library/ee942965(v=vs.110).aspx
+to determine whether the .NET Framework 4.6.2 is
+installed on the machine
+Inputs:         NONE
+Results:        true if the .NET Framework 4.6.2 is installed
+false otherwise
+******************************************************************/
+bool IsNetfx462Installed()
+{
+	bool bRetValue = false;
+	DWORD dwRegValue = 0;
+
+	if (RegistryGetValue(HKEY_LOCAL_MACHINE, g_szNetfx46RegKeyName, g_szNetfx46RegValueName, NULL, (LPBYTE)&dwRegValue, sizeof(DWORD)))
+	{
+		if (g_dwNetfx462ReleaseVersion <= dwRegValue || g_dwNetfx462Win10ReleaseVersion <= dwRegValue)
+			bRetValue = true;
+	}
+
+	return bRetValue;
+}
+
+
 /******************************************************************
 Function Name:  RegistryGetValue
 Description:    Get the value of a reg key
 Inputs:         HKEY hk - The hk of the key to retrieve
-                TCHAR *pszKey - Name of the key to retrieve
-                TCHAR *pszValue - The value that will be retrieved
-                DWORD dwType - The type of the value that will be retrieved
-                LPBYTE data - A buffer to save the retrieved data
-                DWORD dwSize - The size of the data retrieved
+				TCHAR *pszKey - Name of the key to retrieve
+				TCHAR *pszValue - The value that will be retrieved
+				DWORD dwType - The type of the value that will be retrieved
+				LPBYTE data - A buffer to save the retrieved data
+				DWORD dwSize - The size of the data retrieved
 Results:        true if successful, false otherwise
 ******************************************************************/
 bool RegistryGetValue(HKEY hk, const TCHAR * pszKey, const TCHAR * pszValue, DWORD dwType, LPBYTE data, DWORD dwSize)
@@ -686,7 +807,7 @@ bool RegistryGetValue(HKEY hk, const TCHAR * pszKey, const TCHAR * pszValue, DWO
 		RegCloseKey(hkOpened);
 		return false;
 	}
-	
+
 	// Clean up
 	RegCloseKey(hkOpened);
 
@@ -695,16 +816,154 @@ bool RegistryGetValue(HKEY hk, const TCHAR * pszKey, const TCHAR * pszValue, DWO
 
 //********************************************* NSIS Plugin Functions ****************************************************************************
 
-//***************************************************** .NET 4.51 **********************************************************************************
+//***************************************************** .NET 4.6.2 *******************************************************************************
 
 extern "C"
-void __declspec(dllexport) IsDotNet451Installed(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra) {
+void __declspec(dllexport) IsDotNet462Installed(HWND hwndParent, int string_size, TCHAR *variables, stack_t **stacktop, extra_parameters *extra)
+{
 	EXDLL_INIT();
-	pushstring((IsNetfx451Installed()) ? "true" : "false");
+	pushstring((IsNetfx462Installed()) ? L"true" : L"false");
 }
 
 extern "C"
-void __declspec(dllexport) GetDotNet451ServicePack(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra) {
+void __declspec(dllexport) GetDotNet462ServicePack(HWND hwndParent, int string_size, TCHAR *variables, stack_t **stacktop, extra_parameters *extra)
+{
+	EXDLL_INIT();
+
+	int iNetfx462SPLevel = -1;
+	bool bNetfx462Installed = (IsNetfx462Installed() && CheckNetfxVersionUsingMscoree(g_szNetfx40VersionString));
+	TCHAR szMessage[MAX_PATH];
+	TCHAR szOutputString[MAX_PATH * 20];
+
+	if (bNetfx462Installed)
+	{
+		iNetfx462SPLevel = GetNetfxSPLevel(g_szNetfx46RegKeyName, g_szNetfx40SPxRegValueName);
+
+		if (iNetfx462SPLevel > 0)
+			pushint(iNetfx462SPLevel);
+		else
+			pushint(-1);
+	}
+	else
+	{
+		pushint(-2);
+	}
+}
+
+//***************************************************** .NET 4.6.1 *******************************************************************************
+
+extern "C"
+void __declspec(dllexport) IsDotNet461Installed(HWND hwndParent, int string_size, TCHAR *variables, stack_t **stacktop, extra_parameters *extra)
+{
+	EXDLL_INIT();
+	pushstring((IsNetfx461Installed()) ? L"true" : L"false");
+}
+
+extern "C"
+void __declspec(dllexport) GetDotNet461ServicePack(HWND hwndParent, int string_size, TCHAR *variables, stack_t **stacktop, extra_parameters *extra)
+{
+	EXDLL_INIT();
+
+	int iNetfx461SPLevel = -1;
+	bool bNetfx461Installed = (IsNetfx461Installed() && CheckNetfxVersionUsingMscoree(g_szNetfx40VersionString));
+	TCHAR szMessage[MAX_PATH];
+	TCHAR szOutputString[MAX_PATH * 20];
+
+	if (bNetfx461Installed)
+	{
+		iNetfx461SPLevel = GetNetfxSPLevel(g_szNetfx46RegKeyName, g_szNetfx40SPxRegValueName);
+
+		if (iNetfx461SPLevel > 0)
+			pushint(iNetfx461SPLevel);
+		else
+			pushint(-1);
+	}
+	else
+	{
+		pushint(-2);
+	}
+}
+
+//***************************************************** .NET 4.6 **********************************************************************************
+
+extern "C"
+void __declspec(dllexport) IsDotNet46Installed(HWND hwndParent, int string_size, TCHAR *variables, stack_t **stacktop, extra_parameters *extra)
+{
+	EXDLL_INIT();
+	pushstring((IsNetfx46Installed()) ? L"true" : L"false");
+}
+
+extern "C"
+void __declspec(dllexport) GetDotNet46ServicePack(HWND hwndParent, int string_size, TCHAR *variables, stack_t **stacktop, extra_parameters *extra)
+{
+	EXDLL_INIT();
+
+	int iNetfx46SPLevel = -1;
+	bool bNetfx46Installed = (IsNetfx46Installed() && CheckNetfxVersionUsingMscoree(g_szNetfx40VersionString));
+	TCHAR szMessage[MAX_PATH];
+	TCHAR szOutputString[MAX_PATH * 20];
+
+	if (bNetfx46Installed)
+	{
+		iNetfx46SPLevel = GetNetfxSPLevel(g_szNetfx46RegKeyName, g_szNetfx40SPxRegValueName);
+
+		if (iNetfx46SPLevel > 0)
+			pushint(iNetfx46SPLevel);
+		else
+			pushint(-1);
+	}
+	else
+	{
+		pushint(-2);
+	}
+}
+
+//***************************************************** .NET 4.52 **********************************************************************************
+
+extern "C"
+void __declspec(dllexport) IsDotNet452Installed(HWND hwndParent, int string_size, TCHAR *variables, stack_t **stacktop, extra_parameters *extra)
+{
+	EXDLL_INIT();
+	pushstring((IsNetfx452Installed()) ? L"true" : L"false");
+}
+
+extern "C"
+void __declspec(dllexport) GetDotNet452ServicePack(HWND hwndParent, int string_size, TCHAR *variables, stack_t **stacktop, extra_parameters *extra)
+{
+	EXDLL_INIT();
+
+	int iNetfx452SPLevel = -1;
+	bool bNetfx452Installed = (IsNetfx452Installed() && CheckNetfxVersionUsingMscoree(g_szNetfx40VersionString));
+	TCHAR szMessage[MAX_PATH];
+	TCHAR szOutputString[MAX_PATH * 20];
+
+	if (bNetfx452Installed)
+	{
+		iNetfx452SPLevel = GetNetfxSPLevel(g_szNetfx45RegKeyName, g_szNetfx40SPxRegValueName);
+
+		if (iNetfx452SPLevel > 0)
+			pushint(iNetfx452SPLevel);
+		else
+			pushint(-1);
+	}
+	else
+	{
+		pushint(-2);
+	}
+}
+
+//***************************************************** .NET 4.51 **********************************************************************************
+
+extern "C"
+void __declspec(dllexport) IsDotNet451Installed(HWND hwndParent, int string_size, TCHAR *variables, stack_t **stacktop, extra_parameters *extra)
+{
+	EXDLL_INIT();
+	pushstring((IsNetfx451Installed()) ? L"true" : L"false");
+}
+
+extern "C"
+void __declspec(dllexport) GetDotNet451ServicePack(HWND hwndParent, int string_size, TCHAR *variables, stack_t **stacktop, extra_parameters *extra)
+{
 	EXDLL_INIT();
 
 	int iNetfx451SPLevel = -1;
@@ -727,16 +986,17 @@ void __declspec(dllexport) GetDotNet451ServicePack(HWND hwndParent, int string_s
 	}
 }
 
-//***************************************************** .NET 4.5 **********************************************************************************
-
+//************************************************* .NET 4.5 ********************************************************************************
 extern "C"
-void __declspec(dllexport) IsDotNet45Installed(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra) {
+void __declspec(dllexport) IsDotNet45Installed(HWND hwndParent, int string_size, TCHAR *variables, stack_t **stacktop, extra_parameters *extra)
+{
 	EXDLL_INIT();
-	pushstring((IsNetfx45Installed()) ? "true" : "false");
+	pushstring(IsNetfx45Installed() ? L"true" : L"false");
 }
 
 extern "C"
-void __declspec(dllexport) GetDotNet45ServicePack(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra) {
+void __declspec(dllexport) GetDotNet45ServicePack(HWND hwndParent, int string_size, TCHAR *variables, stack_t **stacktop, extra_parameters *extra)
+{
 	EXDLL_INIT();
 
 	int iNetfx45SPLevel = -1;
@@ -761,13 +1021,15 @@ void __declspec(dllexport) GetDotNet45ServicePack(HWND hwndParent, int string_si
 
 //************************************************* .NET 4.0 Full ********************************************************************************
 extern "C"
-void __declspec(dllexport) IsDotNet40FullInstalled(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra) {
+void __declspec(dllexport) IsDotNet40FullInstalled(HWND hwndParent, int string_size, TCHAR *variables, stack_t **stacktop, extra_parameters *extra)
+{
 	EXDLL_INIT();
-	pushstring((IsNetfx40FullInstalled() && CheckNetfxVersionUsingMscoree(g_szNetfx40VersionString)) ? "true" : "false");
+	pushstring((IsNetfx40FullInstalled() && CheckNetfxVersionUsingMscoree(g_szNetfx40VersionString)) ? L"true" : L"false");
 }
 
 extern "C"
-void __declspec(dllexport) GetDotNet40FullServicePack(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra) {
+void __declspec(dllexport) GetDotNet40FullServicePack(HWND hwndParent, int string_size, TCHAR *variables, stack_t **stacktop, extra_parameters *extra)
+{
 	EXDLL_INIT();
 
 	int iNetfx40FullSPLevel = -1;
@@ -791,15 +1053,16 @@ void __declspec(dllexport) GetDotNet40FullServicePack(HWND hwndParent, int strin
 }
 
 //************************************************* .NET 4.0 Client ******************************************************************************
-
 extern "C"
-void __declspec(dllexport) IsDotNet40ClientInstalled(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra) {
+void __declspec(dllexport) IsDotNet40ClientInstalled(HWND hwndParent, int string_size, TCHAR *variables, stack_t **stacktop, extra_parameters *extra)
+{
 	EXDLL_INIT();
-	pushstring((IsNetfx40ClientInstalled() && CheckNetfxVersionUsingMscoree(g_szNetfx40VersionString)) ? "true" : "false");
+	pushstring((IsNetfx40ClientInstalled() && CheckNetfxVersionUsingMscoree(g_szNetfx40VersionString)) ? L"true" : L"false");
 }
 
 extern "C"
-void __declspec(dllexport) GetDotNet40ClientServicePack(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra) {
+void __declspec(dllexport) GetDotNet40ClientServicePack(HWND hwndParent, int string_size, TCHAR *variables, stack_t **stacktop, extra_parameters *extra)
+{
 	EXDLL_INIT();
 
 	int iNetfx40ClientSPLevel = -1;
@@ -823,19 +1086,20 @@ void __declspec(dllexport) GetDotNet40ClientServicePack(HWND hwndParent, int str
 }
 
 //***************************************************** .NET 3.5 **********************************************************************************
-
 extern "C"
-void __declspec(dllexport) IsDotNet35Installed(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra) {
+void __declspec(dllexport) IsDotNet35Installed(HWND hwndParent, int string_size, TCHAR *variables, stack_t **stacktop, extra_parameters *extra)
+{
 	EXDLL_INIT();
 
 	// The .NET Framework 3.5 is an add-in that installs
 	// on top of the .NET Framework 2.0 and 3.0.  For this version
 	// check, validate that 2.0, 3.0 and 3.5 are installed.
-	pushstring((IsNetfx20Installed() && IsNetfx30Installed() && IsNetfx35Installed() && CheckNetfxVersionUsingMscoree(g_szNetfx20VersionString)) ? "true" : "false");
+	pushstring((IsNetfx20Installed() && IsNetfx30Installed() && IsNetfx35Installed() && CheckNetfxVersionUsingMscoree(g_szNetfx20VersionString)) ? L"true" : L"false");
 }
 
 extern "C"
-void __declspec(dllexport) GetDotNet35ServicePack(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra) {
+void __declspec(dllexport) GetDotNet35ServicePack(HWND hwndParent, int string_size, TCHAR *variables, stack_t **stacktop, extra_parameters *extra)
+{
 	EXDLL_INIT();
 
 	int iNetfx35SPLevel = -1;
@@ -859,19 +1123,20 @@ void __declspec(dllexport) GetDotNet35ServicePack(HWND hwndParent, int string_si
 }
 
 //***************************************************** .NET 3.0 **********************************************************************************
-
 extern "C"
-void __declspec(dllexport) IsDotNet30Installed(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra) {
+void __declspec(dllexport) IsDotNet30Installed(HWND hwndParent, int string_size, TCHAR *variables, stack_t **stacktop, extra_parameters *extra)
+{
 	EXDLL_INIT();
 
 	// The .NET Framework 3.0 is an add-in that installs
 	// on top of the .NET Framework 2.0.  For this version
 	// check, validate that both 2.0 and 3.0 are installed.
-	pushstring((IsNetfx20Installed() && IsNetfx30Installed() && CheckNetfxVersionUsingMscoree(g_szNetfx20VersionString)) ? "true" : "false");
+	pushstring((IsNetfx20Installed() && IsNetfx30Installed() && CheckNetfxVersionUsingMscoree(g_szNetfx20VersionString)) ? L"true" : L"false");
 }
 
 extern "C"
-void __declspec(dllexport) GetDotNet30ServicePack(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra) {
+void __declspec(dllexport) GetDotNet30ServicePack(HWND hwndParent, int string_size, TCHAR *variables, stack_t **stacktop, extra_parameters *extra)
+{
 	EXDLL_INIT();
 
 	int iNetfx30SPLevel = -1;
@@ -895,15 +1160,16 @@ void __declspec(dllexport) GetDotNet30ServicePack(HWND hwndParent, int string_si
 }
 
 //***************************************************** .NET 2.0 **********************************************************************************
-
 extern "C"
-void __declspec(dllexport) IsDotNet20Installed(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra) {
+void __declspec(dllexport) IsDotNet20Installed(HWND hwndParent, int string_size, TCHAR *variables, stack_t **stacktop, extra_parameters *extra)
+{
 	EXDLL_INIT();
-	pushstring((IsNetfx20Installed() && CheckNetfxVersionUsingMscoree(g_szNetfx20VersionString)) ? "true" : "false");
+	pushstring((IsNetfx20Installed() && CheckNetfxVersionUsingMscoree(g_szNetfx20VersionString)) ? L"true" : L"false");
 }
 
 extern "C"
-void __declspec(dllexport) GetDotNet20ServicePack(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra) {
+void __declspec(dllexport) GetDotNet20ServicePack(HWND hwndParent, int string_size, TCHAR *variables, stack_t **stacktop, extra_parameters *extra)
+{
 	EXDLL_INIT();
 
 	int iNetfx20SPLevel = -1;
@@ -927,15 +1193,16 @@ void __declspec(dllexport) GetDotNet20ServicePack(HWND hwndParent, int string_si
 }
 
 //***************************************************** .NET 1.1 **********************************************************************************
-
 extern "C"
-void __declspec(dllexport) IsDotNet11Installed(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra) {
+void __declspec(dllexport) IsDotNet11Installed(HWND hwndParent, int string_size, TCHAR *variables, stack_t **stacktop, extra_parameters *extra)
+{
 	EXDLL_INIT();
-	pushstring((IsNetfx11Installed() && CheckNetfxVersionUsingMscoree(g_szNetfx11VersionString)) ? "true" : "false");
+	pushstring((IsNetfx11Installed() && CheckNetfxVersionUsingMscoree(g_szNetfx11VersionString)) ? L"true" : L"false");
 }
 
 extern "C"
-void __declspec(dllexport) GetDotNet11ServicePack(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra) {
+void __declspec(dllexport) GetDotNet11ServicePack(HWND hwndParent, int string_size, TCHAR *variables, stack_t **stacktop, extra_parameters *extra)
+{
 	EXDLL_INIT();
 
 	int iNetfx11SPLevel = -1;
@@ -959,15 +1226,16 @@ void __declspec(dllexport) GetDotNet11ServicePack(HWND hwndParent, int string_si
 }
 
 //***************************************************** .NET 1.0 **********************************************************************************
-
 extern "C"
-void __declspec(dllexport) IsDotNet10Installed(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra) {
+void __declspec(dllexport) IsDotNet10Installed(HWND hwndParent, int string_size, TCHAR *variables, stack_t **stacktop, extra_parameters *extra)
+{
 	EXDLL_INIT();
-	pushstring((IsNetfx11Installed() && CheckNetfxVersionUsingMscoree(g_szNetfx11VersionString)) ? "true" : "false");
+	pushstring((IsNetfx11Installed() && CheckNetfxVersionUsingMscoree(g_szNetfx11VersionString)) ? L"true" : L"false");
 }
 
 extern "C"
-void __declspec(dllexport) GetDotNet10ServicePack(HWND hwndParent, int string_size, char *variables, stack_t **stacktop, extra_parameters *extra) {
+void __declspec(dllexport) GetDotNet10ServicePack(HWND hwndParent, int string_size, TCHAR *variables, stack_t **stacktop, extra_parameters *extra)
+{
 	EXDLL_INIT();
 
 	int iNetfx10SPLevel = -1;
